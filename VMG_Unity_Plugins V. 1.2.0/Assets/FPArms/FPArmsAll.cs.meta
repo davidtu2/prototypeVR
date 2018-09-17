@@ -1,0 +1,79 @@
+fileFormatVersion: 2
+guid: d2fcd6c5a8ed040448b5c64fb6c129f4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - arms1: {instanceID: 0}
+  - arms2: {instanceID: 0}
+  - arms3: {instanceID: 0}
+  - arms4: {instanceID: 0}
+  - arms1mesh: {instanceID: 0}
+  - arms2mesh: {instanceID: 0}
+  - arms3mesh: {instanceID: 0}
+  - arms4mesh: {instanceID: 0}
+  - mainCameraGO: {instanceID: 0}
+  - mainCameraSnapObject1: {instanceID: 0}
+  - mainCameraSnapObject2: {instanceID: 0}
+  - mainCameraSnapObject3: {instanceID: 0}
+  - mainCameraSnapObject4: {instanceID: 0}
+  - arms1Light: {instanceID: 0}
+  - arms2Light: {instanceID: 0}
+  - arms2Light2: {instanceID: 0}
+  - arms3Light: {instanceID: 0}
+  - arms4Light: {instanceID: 0}
+  - arms4Light2: {instanceID: 0}
+  - arms1Medium: {instanceID: 0}
+  - arms2Medium: {instanceID: 0}
+  - arms2Medium2: {instanceID: 0}
+  - arms3Medium: {instanceID: 0}
+  - arms4Medium: {instanceID: 0}
+  - arms4Medium2: {instanceID: 0}
+  - arms1Dark: {instanceID: 0}
+  - arms2Dark: {instanceID: 0}
+  - arms2Dark2: {instanceID: 0}
+  - arms3Dark: {instanceID: 0}
+  - arms4Dark: {instanceID: 0}
+  - arms4Dark2: {instanceID: 0}
+  - arms1DarkBlue: {instanceID: 0}
+  - arms1DarkPurple: {instanceID: 0}
+  - arms1DarkRed: {instanceID: 0}
+  - arms1DarkWine: {instanceID: 0}
+  - arms1LightBlue: {instanceID: 0}
+  - arms1LightPurple: {instanceID: 0}
+  - arms1LightRed: {instanceID: 0}
+  - arms1LightWine: {instanceID: 0}
+  - arms1MediumBlue: {instanceID: 0}
+  - arms1MediumPurple: {instanceID: 0}
+  - arms1MediumRed: {instanceID: 0}
+  - arms1MediumWine: {instanceID: 0}
+  - arms2DarkBlue: {instanceID: 0}
+  - arms2DarkPurple: {instanceID: 0}
+  - arms2DarkRed: {instanceID: 0}
+  - arms2DarkWine: {instanceID: 0}
+  - arms2LightBlue: {instanceID: 0}
+  - arms2LightPurple: {instanceID: 0}
+  - arms2LightRed: {instanceID: 0}
+  - arms2LightWine: {instanceID: 0}
+  - arms2MediumBlue: {instanceID: 0}
+  - arms2MediumPurple: {instanceID: 0}
+  - arms2MediumRed: {instanceID: 0}
+  - arms2MediumWine: {instanceID: 0}
+  - arms2DarkBlue2: {instanceID: 0}
+  - arms2DarkPurple2: {instanceID: 0}
+  - arms2DarkRed2: {instanceID: 0}
+  - arms2DarkWine2: {instanceID: 0}
+  - arms2LightBlue2: {instanceID: 0}
+  - arms2LightPurple2: {instanceID: 0}
+  - arms2LightRed2: {instanceID: 0}
+  - arms2LightWine2: {instanceID: 0}
+  - arms2MediumBlue2: {instanceID: 0}
+  - arms2MediumPurple2: {instanceID: 0}
+  - arms2MediumRed2: {instanceID: 0}
+  - arms2MediumWine2: {instanceID: 0}
+  - popup: {fileID: 1009905072588724, guid: 5e98009dcfe859548963dc69495aceeb, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
