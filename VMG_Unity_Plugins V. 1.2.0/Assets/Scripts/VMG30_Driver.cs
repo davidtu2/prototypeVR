@@ -244,7 +244,7 @@ public class VMG30_Driver {
                                     int id = RecvBuffer[datastart] * 256 + RecvBuffer[datastart + 1]; datastart += 2;
                                     int timestamp = (RecvBuffer[datastart] << 24) + (RecvBuffer[datastart + 1] << 16) + (RecvBuffer[datastart + 2] << 8) + (RecvBuffer[datastart + 3]); datastart += 4;
 
-                                    Debug.Log("ID:" + id + " Time:" + timestamp + "\n");
+                                    //Debug.Log("ID:" + id + " Time:" + timestamp + "\n");
 
                                     if (pkgtype == Constants.PKG_QUAT_FINGER){
                                         //get quaternion values
@@ -377,7 +377,7 @@ public class VMG30_Driver {
                                     NumPkgRecv++;
                                 }
 
-                                Debug.Log("PKGRECV: " + NumPkgRecv + "\n");
+                                //Debug.Log("PKGRECV: " + NumPkgRecv + "\n");
 
                                 //shift streaming buffer
                                 int finpos = pospackage + pkglen;

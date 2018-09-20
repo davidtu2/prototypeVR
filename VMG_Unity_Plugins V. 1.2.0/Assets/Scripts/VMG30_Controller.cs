@@ -8,7 +8,7 @@ using UnityEngine;
 namespace VML{
     public class VMG30_Controller : MonoBehaviour{
         private bool debugSkeletonLeft = true;
-        private bool debugSkeletonRight = false;
+        private bool debugSkeletonRight = true;
 
         //For this machine, the correct ports are 5 and 4, respectively... Which is set in the INSPECTOR
         public int COMPORT_LeftGlove = 1;
@@ -73,6 +73,9 @@ namespace VML{
 
             gloveR.Init(COMPORT_RightGlove, Constants.RightHanded, Constants.PKG_QUAT_FINGER);
             gloveR.StartCommunication();
+
+            Debug.Log(spine.name);
+            Debug.Log(root.name);
 
             Debug.Log(clavicleR.tag);
             Debug.Log(upperArmR.tag);
@@ -258,16 +261,18 @@ namespace VML{
             //float[] sensVal = new float[10];
             //WGetWinTracker(ref sensVal, 0);
 
-            Debug.Log("debugSkeletonLeft: " + debugSkeletonLeft);
+
 
             if (gloveL.NewPackageAvailable()){
                 VMGValues v = gloveL.GetPackage();
 
-                //update values, this depends on the hand bones definition, please chenge this part in your application
+                //update values, this depends on the hand bones definition, please change this part in your application
                 UpdateHandAnglesLeft(v);
 
-                //update finger rendering
+                //update finger rendering position and rotation
+                //All of the data from UpdateHandAnglesLeft() seem to be transferred over to their respective parts:
                 for (i = 0; i < 3; i++){
+                    //Transform.localRotation = the rotation of the transform relative to the transform rotation of the parent
                     ThumbL[i].localRotation = Quaternion.Euler(thumbFlexAnglesL[i]);
                     IndexL[i].localRotation = Quaternion.Euler(indexFlexAnglesL[i]);
                     MiddleL[i].localRotation = Quaternion.Euler(middleFlexAnglesL[i]);
@@ -275,61 +280,66 @@ namespace VML{
                     LittleL[i].localRotation = Quaternion.Euler(littleFlexAnglesL[i]);
                 }
 
-                Vector3 Zaxis = new Vector3(0.0f, 0.0f, 1.0f);
-                Vector3 Zrot = Quaternion.Euler(v.pitchW, -v.yawW + gloveL.GetYaw0(), v.rollW) * Zaxis;
+                //PITCH = rotation about the x-axis
+                //YAW = rotation about the y-axis
+                //ROLL = rotation about the z-axis
 
-                float yaw = Mathf.Rad2Deg * Mathf.Atan2(-Zrot[0], Zrot[2]);
-
+                //compute wrist orientation vector taking into consideration reset yaw0
+                Vector3 Zaxis = new Vector3(0.0f, 0.0f, 1.0f);//Z-axis is pointing towards you
+                Vector3 Zrot = Quaternion.Euler(v.pitchW, -v.yawW + gloveL.GetYaw0(), v.rollW) * Zaxis;//Euler = returns a rotation
+                float yaw = Mathf.Rad2Deg * Mathf.Atan2(-Zrot[0], Zrot[2]);//atan(-x, z)
                 float yawD = 90.0f - yaw;
-                float yawUpper = 1.5f * yawD / 3.0f;
-                float yawLower = 1.5f * yawD / 3.0f;
+                float yawUpper = 1.5f * yawD / 3.0f;//upperArmL
+                float yawLower = 1.5f * yawD / 3.0f;//lowerArmL
 
                 if (yawLower < 0.0f){
                     yawLower = 0.0f;
                     yawUpper = yawD;
                 }
 
-                //eseguo roll 0.5 su hand 0.4 su lowerarm e 0.1 su upper arm
+                //TODO: Why is a yaw rotation performed on the z-axis?
+                //fix yaw value, rotation along local Z axis
                 upperArmL.localRotation = Quaternion.Euler(0.0f, 0.0f, yawUpper);
                 lowerArmL.localRotation = Quaternion.Euler(0.0f, 0.0f, yawLower);
 
-                //apply to upperArm another rotation around xaxis
-                //get xaxis on global coordinate
+                //apply to upperArm ANOTHER rotation around x-axis
+                //get x-axis on global coordinate by using TransformVector
+                //TransformVector = Transform the given vector from local to world (global) space (from upperArm's local space)
+                //From this object's perspecitive, it's x-axis is (1, 0, 0) but it may not be the case in world space
                 Vector3 xaxis = upperArmL.TransformVector(new Vector3(1.0f, 0.0f, 0.0f));
+                //Rotates the transform about the given axis passing through the given point by angle degrees
                 upperArmL.RotateAround(upperArmL.position, xaxis, v.pitchW);
 
-                //roll, rotation along xaxis of lowerArm and xaxis of hand
+                //roll rotation along x-axis of lowerArm and x-axis of hand
                 xaxis = lowerArmL.TransformVector(new Vector3(1.0f, 0.0f, 0.0f));
-                upperArmL.RotateAround(upperArmL.position, xaxis, 0.25f * v.rollW);
+                upperArmL.RotateAround(upperArmL.position, xaxis, 0.25f * v.rollW);//TODO: Why is a roll rotation performed on the x-axis?
                 lowerArmL.RotateAround(lowerArmL.position, xaxis, 0.65f * v.rollW);
-                handL.localRotation = Quaternion.Euler(-90.0f + 0.1f * v.rollW, 0.0f, 0.0f);
+                handL.localRotation = Quaternion.Euler(-90.0f + 0.1f * v.rollW, 0.0f, 0.0f);//rotate within local space
 
-                //compute hand pitch angle (roll and yaw come from wrist)
-                Zrot = Quaternion.Euler(v.pitchH, -v.yawW+gloveL.GetYaw0(), v.rollW) * Zaxis;
-
+                //Compute hand PITCH angle (roll and yaw come from wrist):
+                //TODO: Seems to be repeated
+                //Zrot = Quaternion.Euler(v.pitchH, -v.yawW + gloveL.GetYaw0(), v.rollW) * Zaxis;
                 //get ZRot in the lowerhand reference frame
+                //InverseTransformVector = transform a vector from world space into local space (lowerArmL's local space)
                 Vector3 ZrotLowerArm = lowerArmL.InverseTransformVector(Zrot);
-
-                float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(ZrotLowerArm[2], -ZrotLowerArm[0]);
-
-                //rotate hand along its own Z axis
+                float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(ZrotLowerArm[2], -ZrotLowerArm[0]);//atan(z, -x)
+                //rotate hand along its OWN Z axis (Implies local space)
                 Vector3 ZaxisHand = handL.TransformVector(new Vector3(0.0f, 0.0f, 1.0f));
+                //TODO: Why is a pitch rotation performed on the z-axis?
                 handL.RotateAround(handL.position, ZaxisHand, pitchHandRel);
 
-                Debug.Log("debugSkeletonLeft (2nd Check): " + debugSkeletonLeft);
                 if (debugSkeletonLeft){
                     Debug.Log("New package L\n");
                     DrawSkeletonLeft(v);
                 }
             }
 
-            Debug.Log("debugSkeletonRight: " + debugSkeletonRight);
             //check if a new package is arrived from glove
             if (gloveR.NewPackageAvailable()){
-                //Debug.Log("New package R\n");
+                Debug.Log("New package R\n");
                 VMGValues v = gloveR.GetPackage();
 
-                //update values, this depends on the hand bones definition, please chenge this part in your application
+                //update values, this depends on the hand bones definition, please change this part in your application
                 UpdateHandAnglesRight(v);
 
                 //update fingers rendering position and rotation
@@ -345,7 +355,7 @@ namespace VML{
                 Vector3 Zaxis = new Vector3(0.0f, 0.0f, 1.0f);
                 Vector3 Zrot = Quaternion.Euler(v.pitchW, -v.yawW + gloveR.GetYaw0(), v.rollW) * Zaxis;
 
-                float yaw = Mathf.Rad2Deg*Mathf.Atan2(-Zrot[0], Zrot[2]);
+                float yaw = Mathf.Rad2Deg * Mathf.Atan2(-Zrot[0], Zrot[2]);
 
                 float yawD = 90.0f + yaw;
                 float yawUpper = 1.5f * yawD / 3.0f;
@@ -361,12 +371,12 @@ namespace VML{
                 upperArmR.localRotation = Quaternion.Euler(0.0f, 0.0f, yawUpper);
                 lowerArmR.localRotation = Quaternion.Euler(0.0f, 0.0f, yawLower);
 
-                //apply to upperArm another rotation around xaxis
-                //get xaxis on global coordinate
+                //apply to upperArm another rotation around x-axis
+                //get x-axis on global coordinate
                 Vector3 xaxis = upperArmR.TransformVector(new Vector3(1.0f, 0.0f, 0.0f));
                 upperArmR.RotateAround(upperArmR.position, xaxis, v.pitchW);
 
-                //roll, rotation along xaxis of lowerArm and xaxis of hand
+                //roll, rotation along x-axis of lowerArm and x-axis of hand
                 xaxis = lowerArmR.TransformVector(new Vector3(1.0f, 0.0f, 0.0f));
                 upperArmR.RotateAround(upperArmR.position, xaxis, -0.25f * v.rollW);
                 lowerArmR.RotateAround(lowerArmR.position, xaxis, -0.65f * v.rollW);
@@ -376,14 +386,11 @@ namespace VML{
                 //get ZRot in the lowerhand reference frame
                 Zrot = Quaternion.Euler(v.pitchH, -v.yawW + gloveR.GetYaw0(), v.rollW) * Zaxis;
                 Vector3 ZrotLowerArm = lowerArmR.InverseTransformVector(Zrot);
-
                 float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(-ZrotLowerArm[2], ZrotLowerArm[0]);
-
                 //rotate hand along its own Z axis
                 Vector3 ZaxisHand = handR.TransformVector(new Vector3(0.0f, 0.0f, 1.0f));
                 handR.RotateAround(handR.position, ZaxisHand, pitchHandRel);
 
-                Debug.Log("debugSkeletonRight (2nd Check): " + debugSkeletonRight);
                 if (debugSkeletonRight){
                     Debug.Log("New package R\n");
                     DrawSkeletonRight(v);
@@ -392,7 +399,9 @@ namespace VML{
         }
 
         private void DrawSkeletonLeft(VMGValues v){
-            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + " YAW0:" + gloveL.GetYaw0() + "\n");
+            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + " YAW0:" + gloveL.GetYaw0() + "\n");//roll, pitch, yaw for the wrist
+
+            //TODO: draws skeletion with one index finger
             Debug.DrawRay(spine.position, new Vector3(0.1f, 0.0f, 0.0f), Color.magenta);
             Debug.DrawRay(spine.position, new Vector3(0.0f, 0.1f, 0.0f), Color.green);
             Debug.DrawRay(spine.position, new Vector3(0.0f, 0.0f, 0.1f), Color.blue);
@@ -405,16 +414,15 @@ namespace VML{
             Debug.DrawRay(IndexL[1].position, IndexL[2].position - IndexL[1].position, Color.red);
 
             Vector3 X = new Vector3(0.0f, 0.0f, 0.3f);
-            Vector3 Xrot = Quaternion.Euler(v.pitchW, -v.yawW+gloveL.GetYaw0(), v.rollW) * X;
-
+            Vector3 Xrot = Quaternion.Euler(v.pitchW, -v.yawW + gloveL.GetYaw0(), v.rollW) * X;
             Debug.DrawRay(lowerArmL.position, Xrot, Color.magenta);
 
-            Xrot = Quaternion.Euler(v.pitchH, -v.yawW+gloveL.GetYaw0(), v.rollW) * X;
+            //TODO: Seems to be repeated
+            //Xrot = Quaternion.Euler(v.pitchH, -v.yawW + gloveL.GetYaw0(), v.rollW) * X;
             Debug.DrawRay(handL.position, Xrot, Color.magenta);
 
             //get XRot in the lowerhand reference frame
             Vector3 XrotLowerArm = lowerArmL.InverseTransformVector(Xrot);
-
             float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(XrotLowerArm[2], -XrotLowerArm[0]);
 
             Vector3 xaxis = handL.TransformDirection(new Vector3(0.1f, 0f, 0f));
@@ -437,16 +445,21 @@ namespace VML{
         }
 
         private void DrawSkeletonRight(VMGValues v){
-            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + "\n");
-            Debug.Log("RPY_H:" + v.rollH + " " + v.pitchH + " " + v.yawH + "\n");
-            Debug.DrawRay(spine.position, new Vector3(0.1f, 0.0f, 0.0f), Color.magenta);
-            Debug.DrawRay(spine.position, new Vector3(0.0f, 0.1f, 0.0f), Color.green);
-            Debug.DrawRay(spine.position, new Vector3(0.0f, 0.0f, 0.1f), Color.blue);
+            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + "\n");//Roll, pitch, yaw of the wrist
+            Debug.Log("RPY_H:" + v.rollH + " " + v.pitchH + " " + v.yawH + "\n");//Roll, pitch, yaw of the hand
+            //Draws a line from start to start + dir in world coordinates
+            //TODO: May need to specify length and duration
+            Debug.DrawRay(spine.position, new Vector3(0.1f, 0.0f, 0.0f), Color.magenta);//x-axis
+            Debug.DrawRay(spine.position, new Vector3(0.0f, 0.1f, 0.0f), Color.green);//y-axis
+            Debug.DrawRay(spine.position, new Vector3(0.0f, 0.0f, 0.1f), Color.blue);//z-axis
+
+            //Draw skeleton
             Debug.DrawRay(spine.position, clavicleR.position - spine.position, Color.red);
             Debug.DrawRay(clavicleR.position, upperArmR.position - clavicleR.position, Color.red);
             Debug.DrawRay(upperArmR.position, lowerArmR.position - upperArmR.position, Color.red);
             Debug.DrawRay(lowerArmR.position, handR.position - lowerArmR.position, Color.red);
 
+            //Draw fingers
             Debug.DrawRay(handR.position, ThumbR[0].position - handR.position, Color.red);
             Debug.DrawRay(ThumbR[0].position, ThumbR[1].position - ThumbR[0].position, Color.red);
             Debug.DrawRay(ThumbR[1].position, ThumbR[2].position - ThumbR[1].position, Color.red);
@@ -459,10 +472,11 @@ namespace VML{
             Debug.DrawRay(LittleR[0].position, LittleR[1].position - LittleR[0].position, Color.red);
             Debug.DrawRay(LittleR[1].position, LittleR[2].position - LittleR[1].position, Color.red);
 
+            //TODO: draws a line between the index and the pinky?
             Debug.DrawRay(IndexR[0].position, LittleR[0].position - IndexR[0].position, Color.green);
 
+            //TODO: Do these refer to 'middle position'?
             Vector3 medpos = (IndexR[0].position + LittleR[0].position);
-
             medpos[0] = medpos[0] / 2.0f;
             medpos[1] = medpos[1] / 2.0f;
             medpos[2] = medpos[2] / 2.0f;
@@ -470,22 +484,21 @@ namespace VML{
             Debug.DrawRay(handR.position, medpos - handR.position, Color.green);
 
             Vector3 X = new Vector3(0.0f, 0.0f, 0.3f);
-            Vector3 Xrot = Quaternion.Euler(v.pitchW, -v.yawW+gloveR.GetYaw0(), v.rollW) * X;
+            Vector3 Xrot = Quaternion.Euler(v.pitchW, -v.yawW + gloveR.GetYaw0(), v.rollW) * X;
 
             Debug.DrawRay(lowerArmR.position, Xrot, Color.magenta);
 
-            Xrot = Quaternion.Euler(v.pitchH, -v.yawW+gloveR.GetYaw0(), v.rollW) * X;
+            //TODO: seems to be duplicated:
+            //Xrot = Quaternion.Euler(v.pitchH, -v.yawW + gloveR.GetYaw0(), v.rollW) * X;
             Debug.DrawRay(handR.position, Xrot, Color.magenta);
 
             //get XRot in the lowerhand reference frame
             Vector3 XrotLowerArm = lowerArmR.InverseTransformVector(Xrot);
-
-            float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(XrotLowerArm[2], XrotLowerArm[0]);
-
+            float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(XrotLowerArm[2], XrotLowerArm[0]);//atan(z, x)
             Debug.Log("Pitch Hand Rel:" + pitchHandRel + "\n");
 
             Xrot.Normalize();
-            float yawRot = 180.0f * ((float)System.Math.Atan2(Xrot[0], Xrot[2])) / 3.14159f;
+            float yawRot = 180.0f * ((float)System.Math.Atan2(Xrot[0], Xrot[2])) / 3.14159f;//atan(x, z)
 
             Vector3 xaxis = lowerArmR.TransformDirection(new Vector3(0.1f, 0f, 0f));
             Vector3 yaxis = lowerArmR.TransformDirection(new Vector3(0.0f, 0.1f, 0.0f));
@@ -511,7 +524,9 @@ namespace VML{
             Debug.DrawRay(handR.position, yaxis, Color.green);
             Debug.DrawRay(handR.position, zaxis, Color.blue);
 
+            //wrist quaternion representing wrist rotation (Can be accessed in VMGValues class)
             Debug.Log("QUATW:" + v.q0w.ToString("F3") + " " + v.q1w.ToString("F3") + " " + v.q2w.ToString("F3") + " " + v.q3w.ToString("F3") + "\n");
+            //hand quaternion representing hand orientation
             Debug.Log("QUATH:" + v.q0h.ToString("F3") + " " + v.q1h.ToString("F3") + " " + v.q2h.ToString("F3") + " " + v.q3h.ToString("F3") + "\n");
         }
     }
