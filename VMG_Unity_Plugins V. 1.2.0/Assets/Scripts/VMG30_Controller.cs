@@ -14,7 +14,7 @@ namespace VML{
         public int COMPORT_LeftGlove = 1;
         public int COMPORT_RightGlove = 2;
 
-        //root is common to both left and right hand. These will be used for future purposes (i.e. They are unused)
+        //Root is common to both left and right hand. These will be used for future purposes (i.e. They are unused)
         public Transform root;
         public Transform spine;
 
