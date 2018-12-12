@@ -107,7 +107,8 @@ public class FPArmsAll : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		mainCameraGO = Camera.main;
+        //This gets the Main Camera from the Scene
+        mainCameraGO = Camera.main;
 		popup = GameObject.FindGameObjectWithTag("InformationPlate");//informationPlate
         mainCameraSnapObject1 = GameObject.FindGameObjectWithTag("mainCameraSnapObject1");//snapObject1
         mainCameraSnapObject2 = GameObject.FindGameObjectWithTag("mainCameraSnapObject2");//snapObject2

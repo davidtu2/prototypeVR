@@ -1,0 +1,38 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Camera_Controller : MonoBehaviour {
+    Vector2 mouseLook; //Keeps track of the accumulated mouse movement
+    Vector2 smoothV; //Prevents "jerkiness" of the camera
+    public float sensitivity = 5F; //How much you want to move the mouse on the screen
+    public float smoothing = 2F;
+    GameObject character;
+
+	// Use this for initialization
+	void Start () {
+        //Init the character as the camera's parent (the capsule)
+        character = this.transform.parent.gameObject;
+	}
+	
+	// Update is called once per frame
+	void Update () {
+        var mouse_delta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
+        //Multiply the change in mouse by sensitivity and smoothing values
+        mouse_delta = Vector2.Scale(mouse_delta, new Vector2(sensitivity * smoothing, sensitivity * smoothing));
+        
+        //Lerp performs a linear interpolation, which will make the camera move smoothly between two points
+        smoothV.x = Mathf.Lerp(smoothV.x, mouse_delta.x, 1f / smoothing);
+        smoothV.y = Mathf.Lerp(smoothV.y, mouse_delta.y, 1f / smoothing);
+
+        mouseLook += smoothV;
+        //Clamps up and down
+        mouseLook.y = Mathf.Clamp(mouseLook.y, -90f, 90f);
+
+        //Make a local rotation on the camera around it's right axis (which is it's x-axis). This makes the camera pitch
+        //Using -mouseLook.y rather than a positive value gives the camera an inverted y-axis
+        transform.localRotation = Quaternion.AngleAxis(-mouseLook.y, Vector3.right);
+        //Rotate around the CHARACTER's up since we want the character to move
+        character.transform.localRotation = Quaternion.AngleAxis(mouseLook.x, character.transform.up);
+    }
+}
