@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//This script is attached to the plane
 public class triggers_test : MonoBehaviour {
     public GameObject arms;
 
@@ -9,6 +10,8 @@ public class triggers_test : MonoBehaviour {
 	void Start () {
         //MeshRenderer meshRend = GetComponent<MeshRenderer>();
         //meshRend.material.color = Color.blue;
+
+        //This needs to be instantiated to access the arm's animations
         arms = GameObject.FindGameObjectWithTag("ArmsObject1");
         //Debug.Log("arms is: " + arms.name);
     }
@@ -32,6 +35,8 @@ public class triggers_test : MonoBehaviour {
         // Revert the cube color to white.
         //MeshRenderer meshRend = GetComponent<MeshRenderer>();
         //meshRend.material.color = Color.white;
-        arms.GetComponent<Animation>().Play("FPArms_Unarmed_Idle");
+        if (other.name == "Cylinder"){
+            arms.GetComponent<Animation>().Play("FPArms_Unarmed_Idle");
+        }
     }
 }
