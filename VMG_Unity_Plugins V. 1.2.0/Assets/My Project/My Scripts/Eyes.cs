@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Camera_Controller : MonoBehaviour {
+public class Eyes : MonoBehaviour {
     Vector2 mouseLook; //Keeps track of the accumulated mouse movement
     Vector2 smoothV; //Prevents "jerkiness" of the camera
     public float sensitivity = 5F; //How much you want to move the mouse on the screen

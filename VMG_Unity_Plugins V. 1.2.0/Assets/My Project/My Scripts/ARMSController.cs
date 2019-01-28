@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FP_Arms_Modded : MonoBehaviour{
+public class ARMSController : MonoBehaviour{
     public GameObject arms1;
     public GameObject arms1mesh;
 

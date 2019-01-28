@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Char_Controller : MonoBehaviour {
+public class Controller : MonoBehaviour {
     public float spd = 10F;
 
 	// Use this for initialization

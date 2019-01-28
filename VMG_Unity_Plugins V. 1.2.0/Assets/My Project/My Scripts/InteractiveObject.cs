@@ -10,14 +10,15 @@ public class InteractiveObject : MonoBehaviour {
         inactive //Close
     }
 
-    public GameObject interactiveObject;
+    //public GameObject interactiveObject;
     Animator controller;
     private state current;
 
     private void Start(){
         current = state.inactive;
-        interactiveObject = GameObject.FindGameObjectWithTag("DoorPivot");
-        controller = interactiveObject.GetComponent<Animator>();
+        //interactiveObject = GameObject.FindGameObjectWithTag("Pivot");
+        //controller = interactiveObject.GetComponent<Animator>();
+        controller = GetComponent<Animator>();
     }
 
     private void OnTriggerEnter(Collider other){ //Seems to only work if I set isTrigger = True
@@ -29,22 +30,23 @@ public class InteractiveObject : MonoBehaviour {
 
     public void triggerInteraction(){
         if (controller.GetCurrentAnimatorStateInfo(0).IsName("DoorIdle")){ //"0" refers to the layer in the Animator. In this case, it is the Base Layer
-            doors("Open");
+            door("Open");
         } else if (controller.GetCurrentAnimatorStateInfo(0).IsName("DoorOpen")){
-            doors("Close");
+            door("Close");
         }
     }
 
     public void triggerInteractionLegacy(){
-        if (!interactiveObject.GetComponent<Animation>().isPlaying){ //This check is necessary to prevent the object from jittering
+        //if (!interactiveObject.GetComponent<Animation>().isPlaying){ //This check is necessary to prevent the object from jittering
+        if (!GetComponent<Animation>().isPlaying){ //This check is necessary to prevent the object from jittering
                 switch (current){
                 case state.active:
-                    interactiveObject.GetComponent<Animation>().Play("Close");
+                    GetComponent<Animation>().Play("Close");
                     current = state.inactive;
                     break;
 
                 case state.inactive:
-                    interactiveObject.GetComponent<Animation>().Play("Open");
+                    GetComponent<Animation>().Play("Open");
                     current = state.active;
                     break;
 
@@ -54,7 +56,7 @@ public class InteractiveObject : MonoBehaviour {
         }
     }
 
-    void doors(string current){
+    void door(string current){
         Debug.Log(controller);
         controller.SetTrigger(current);
     }

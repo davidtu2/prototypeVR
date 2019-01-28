@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//This script is attached to the plane
-public class triggers_test : MonoBehaviour {
+//This script is attached to the Plane object
+public class Plane : MonoBehaviour {
     public GameObject arms;
 
 	// Use this for initialization
@@ -23,7 +23,7 @@ public class triggers_test : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other){
         // Change the cube color to green.
-        if (other.name == "Cylinder"){
+        if (other.gameObject.tag == "RightARM"){
             //MeshRenderer meshRend = GetComponent<MeshRenderer>();
             //meshRend.material.color = Color.green;
             //Debug.Log(other.name);
@@ -35,7 +35,7 @@ public class triggers_test : MonoBehaviour {
         // Revert the cube color to white.
         //MeshRenderer meshRend = GetComponent<MeshRenderer>();
         //meshRend.material.color = Color.white;
-        if (other.name == "Cylinder"){
+        if (other.gameObject.tag == "RightARM"){
             arms.GetComponent<Animation>().Play("FPArms_Unarmed_Idle");
         }
     }
