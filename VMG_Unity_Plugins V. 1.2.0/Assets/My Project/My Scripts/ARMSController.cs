@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ARMSController : MonoBehaviour{
     public GameObject arms1;
-    public GameObject arms1mesh;
+    //public GameObject arms1mesh;
 
     //For camera switching (was part of base code)
     //public Camera mainCameraGO;
@@ -13,9 +13,11 @@ public class ARMSController : MonoBehaviour{
     //Note that all existing texture maps are found in .../Texture Maps
     public Texture arms1Light;//FPArms_Female-Light_COL
 
+    Animator animeARMS;
+
     void Start(){
         arms1 = GameObject.FindGameObjectWithTag("ArmsObject1"); //FPArms_Female_Light_LPR_LOD0
-        arms1mesh = GameObject.FindGameObjectWithTag("ArmsMesh1"); //FPArms_Female
+        //arms1mesh = GameObject.FindGameObjectWithTag("ArmsMesh1"); //FPArms_Female
 
         //This gets the Main Camera from the Scene
         //mainCameraGO = Camera.main;
@@ -26,6 +28,8 @@ public class ARMSController : MonoBehaviour{
         //mainCameraGO.transform.position = mainCameraSnapObject1.transform.position;
         //mainCameraGO.transform.rotation = mainCameraSnapObject1.transform.rotation;
         //mainCameraGO.nearClipPlane = cameraNearClipping;
+
+        animeARMS = arms1.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -57,7 +61,9 @@ public class ARMSController : MonoBehaviour{
     }
 
     public void playIdle(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Idle");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Idle");
+
+        protag("Idle");
     }
 
     public void playJump(){
@@ -65,7 +71,9 @@ public class ARMSController : MonoBehaviour{
     }
 
     public void playPunch(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Punch");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Punch");
+
+        protag("Attack");
     }
 
     public void playPushDoor(){
@@ -86,4 +94,8 @@ public class ARMSController : MonoBehaviour{
         meshRend.material.color = Color.green;
         Debug.Log(other.name);
     }*/
+
+    void protag(string state){
+        animeARMS.SetTrigger(state);
+    }
 }
