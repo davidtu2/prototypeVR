@@ -67,7 +67,9 @@ public class ARMSController : MonoBehaviour{
     }
 
     public void playJump(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Jump");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Jump");
+
+        protag("Jump");
     }
 
     public void playPunch(){
@@ -77,15 +79,21 @@ public class ARMSController : MonoBehaviour{
     }
 
     public void playPushDoor(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Push-Door");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Push-Door");
+
+        protag("Push");
     }
 
     public void playSprint(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Sprint");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Sprint");
+
+        protag("Run");
     }
 
     public void playThrow(){
-        arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Throw");
+        //arms1.GetComponent<Animation>().Play("FPArms_Unarmed_Throw");
+
+        protag("Throw");
     }
 
     /*private void OnTriggerEnter(Collider other){
