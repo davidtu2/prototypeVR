@@ -104,6 +104,8 @@ public class ARMSController : MonoBehaviour{
     }*/
 
     void protag(string state){
-        animeARMS.SetTrigger(state);
+        if (!animeARMS.GetCurrentAnimatorStateInfo(0).IsName(state)){
+            animeARMS.SetTrigger(state);
+        }
     }
 }
