@@ -27,9 +27,9 @@ public class MyDoor : MonoBehaviour {
             switchDoorState();
 
             //Once the door opens, immediately stop the punching animation
-            if (animatorARMS.GetCurrentAnimatorStateInfo(0).IsName("Attack")){//TODO: Also check if the door is opened?
+            /*if (animatorARMS.GetCurrentAnimatorStateInfo(0).IsName("Attack")){//TODO: Also check if the door is opened?
                 protag("Idle");
-            }
+            }*/
         }
 
         //Case 2: The player is facing the back of the door and is waiting for it to re-open
