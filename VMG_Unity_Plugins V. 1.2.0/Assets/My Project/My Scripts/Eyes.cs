@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//This is the camera script for the player
 public class Eyes : MonoBehaviour {
     Vector2 mouseLook; //Keeps track of the accumulated mouse movement
     Vector2 smoothV; //Prevents "jerkiness" of the camera
