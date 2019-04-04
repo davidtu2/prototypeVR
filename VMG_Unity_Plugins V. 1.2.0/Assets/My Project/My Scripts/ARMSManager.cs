@@ -4,17 +4,28 @@ using UnityEngine;
 
 public class ARMSManager : MonoBehaviour {
     private GameObject ARMS;
+    private GameObject hand;
     private Animator animatorARMS;
 
     // Use this for initialization
     void Start () {
         ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
+        hand = GameObject.FindGameObjectWithTag("Hand");
         animatorARMS = ARMS.GetComponent<Animator>();
     }
 	
 	// Update is called once per frame
 	void Update () {
-		
+        if (isState("Attack")){
+            if (hand.activeSelf == false){
+                hand.SetActive(true);
+            }
+        }
+        else{
+            if (hand.activeSelf == true){
+                hand.SetActive(false);
+            }
+        }
 	}
 
     public bool isState(string state){

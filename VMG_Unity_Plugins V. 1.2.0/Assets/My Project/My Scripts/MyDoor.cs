@@ -7,7 +7,7 @@ public class MyDoor : MonoBehaviour {
     private Animator animatorDoor;
     private ARMSManager manager;
     private Canvas UI;
-    private bool locked;
+    public bool locked;
 
     //Initialization
     void Start (){
@@ -21,7 +21,7 @@ public class MyDoor : MonoBehaviour {
             UI.rootCanvas.enabled = false;
         }
 
-        locked = false;
+        locked = true;
     }
 
     //This control struc be enabled if isTrigger = true
@@ -32,22 +32,15 @@ public class MyDoor : MonoBehaviour {
                 if (!isBehindDoor(other.transform.position)){
                     UI.GetComponentInChildren<Text>().text = "Punch the door to open";
                     UI.rootCanvas.enabled = true;
-
-                    //Case 1: The player is facing the front of the door
-                    if (other.gameObject.tag == "Hand" && manager.isState("Attack")){
-                        toggleDoorState();
-                    }
                 } else {
-                    //Case 2: The player is facing the back of the door and is waiting for it to re-open
+                    //The player is facing the back of the door and is waiting for it to re-open
                     if (other.gameObject.tag == "Body") {
                         toggleDoorState();
                     }
                 }
             } else {
-                if (!isBehindDoor(other.transform.position)) {
-                    UI.GetComponentInChildren<Text>().text = "The door is locked";
-                    UI.rootCanvas.enabled = true;
-                }
+                UI.GetComponentInChildren<Text>().text = "The door is locked";
+                UI.rootCanvas.enabled = true;
             }
         }
 	}
@@ -59,6 +52,15 @@ public class MyDoor : MonoBehaviour {
 
         if (other.gameObject.tag == "Body" && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("OpenDoor")){
             toggleDoorState();
+        }
+    }
+
+    //Used to check if an object is already inside the trigger zone
+    private void OnTriggerStay(Collider other){
+        if (other.gameObject.tag == "Hand"){
+            if (animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty") && !locked && !isBehindDoor(other.transform.position) && animatorDoor.GetBool("IsOpen") == false){
+                toggleDoorState();
+            }
         }
     }
 
@@ -80,5 +82,9 @@ public class MyDoor : MonoBehaviour {
         } else {
             return false;
         }
+    }
+
+    public void unlock(){
+        locked = false;
     }
 }
