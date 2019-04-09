@@ -6,13 +6,13 @@ public class Controller : MonoBehaviour {
     public float spd = 5F;
 
 	// Use this for initialization
-	void Start () {
+	private void Start () {
         //Turns off the cursor so you can't see it on the screen. Will also lock it so it will stay inside the game window
         Cursor.lockState = CursorLockMode.Locked;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	private void Update () {
         float forwards_backwards = Input.GetAxis("Vertical") * spd;
         float left_right = Input.GetAxis("Horizontal") * spd;
 

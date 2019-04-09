@@ -4,20 +4,20 @@ using UnityEngine;
 
 //This is the camera script for the player
 public class Eyes : MonoBehaviour {
-    Vector2 mouseLook; //Keeps track of the accumulated mouse movement
-    Vector2 smoothV; //Prevents "jerkiness" of the camera
+    private Vector2 mouseLook; //Keeps track of the accumulated mouse movement
+    private Vector2 smoothV; //Prevents "jerkiness" of the camera
     public float sensitivity = 5F; //How much you want to move the mouse on the screen
     public float smoothing = 2F;
-    GameObject character;
+    private GameObject character;
 
 	// Use this for initialization
-	void Start () {
+	private void Start () {
         //Init the character as the camera's parent (the capsule)
         character = this.transform.parent.gameObject;
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	private void Update () {
         var mouse_delta = new Vector2(Input.GetAxisRaw("Mouse X"), Input.GetAxisRaw("Mouse Y"));
         //Multiply the change in mouse by sensitivity and smoothing values
         mouse_delta = Vector2.Scale(mouse_delta, new Vector2(sensitivity * smoothing, sensitivity * smoothing));

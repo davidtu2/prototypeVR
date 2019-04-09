@@ -6,7 +6,7 @@ public class Plane : MonoBehaviour {
     private ARMSManager manager;
 
     //Initialization
-    void Start () {
+    private void Start () {
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
     }
 

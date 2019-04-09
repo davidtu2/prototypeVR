@@ -18,7 +18,7 @@ public class Switches : MonoBehaviour {
     private GameObject switch5;
     private GameObject switch6;
 
-	void Start () {
+	private void Start () {
         door1 = GameObject.FindGameObjectWithTag("Door1").GetComponent<MyDoor>();
         door2 = GameObject.FindGameObjectWithTag("Door2").GetComponent<MyDoor>();
         door3 = GameObject.FindGameObjectWithTag("Door3").GetComponent<MyDoor>();

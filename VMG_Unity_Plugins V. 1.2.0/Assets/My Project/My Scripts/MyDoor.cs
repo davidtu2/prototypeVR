@@ -10,7 +10,7 @@ public class MyDoor : MonoBehaviour {
     public bool locked;
 
     //Initialization
-    void Start (){
+    private void Start (){
         //This gets the Transform with the specified name from the object hierarchy
         animatorDoor = transform.Find("Door_01").GetComponent<Animator>();
         //This gets the ARMSManager script
@@ -25,7 +25,7 @@ public class MyDoor : MonoBehaviour {
     }
 
     //This control struc be enabled if isTrigger = true
-    void OnTriggerEnter (Collider other){
+    private void OnTriggerEnter (Collider other){
         //"Empty" means that the door is idle and "0" refers to the layer in the Animator. In this case, it is the Base Layer
         if (UI != null && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty")){
             if (!locked){
@@ -45,7 +45,7 @@ public class MyDoor : MonoBehaviour {
         }
 	}
 
-	void OnTriggerExit (Collider other){
+	private void OnTriggerExit (Collider other){
         if (UI != null){
             UI.rootCanvas.enabled = false;
         }
@@ -64,14 +64,14 @@ public class MyDoor : MonoBehaviour {
         }
     }
 
-    void toggleDoorState(){
+    private void toggleDoorState(){
         if (animatorDoor != null){
             //Switches between true and false
             animatorDoor.SetBool("IsOpen", !animatorDoor.GetBool("IsOpen"));
         }
     }
 
-    bool isBehindDoor(Vector3 position){
+    private bool isBehindDoor(Vector3 position){
         //Vector pointing from the door to the player
         Vector3 toPlayer = (position - transform.position).normalized;
         //Debug.Log(Vector3.Dot(toPlayer, transform.forward));
@@ -86,5 +86,9 @@ public class MyDoor : MonoBehaviour {
 
     public void unlock(){
         locked = false;
+    }
+
+    public void lockDoor(){
+        locked = true;
     }
 }

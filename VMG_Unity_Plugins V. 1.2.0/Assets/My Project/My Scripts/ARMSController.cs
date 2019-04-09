@@ -4,12 +4,12 @@ using System.Collections;
 public class ARMSController : MonoBehaviour{
     private ARMSManager manager;
 
-    void Start(){
+    private void Start(){
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
     }
 
     // Update is called once PER FRAME
-    void Update(){
+    private void Update(){
         if (Input.GetKey("1")){
             manager.protag("Idle");
         }

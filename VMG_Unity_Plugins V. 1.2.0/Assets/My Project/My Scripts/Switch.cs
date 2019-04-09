@@ -5,14 +5,12 @@ using UnityEngine;
 //Script for the knockables
 public class Switch : MonoBehaviour {
     private Switches manager;
-
     private bool fading;
     private float fadePerSecond = 0.5f;
-    Material material;
+    private Material material;
 
-    void Start () {
+    private void Start () {
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<Switches>();
-
         fading = false;
         material = GetComponent<Renderer>().material;
     }

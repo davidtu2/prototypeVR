@@ -8,20 +8,19 @@ public class ARMSManager : MonoBehaviour {
     private Animator animatorARMS;
 
     // Use this for initialization
-    void Start () {
+    private void Start () {
         ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
         hand = GameObject.FindGameObjectWithTag("Hand");
         animatorARMS = ARMS.GetComponent<Animator>();
     }
 	
 	// Update is called once per frame
-	void Update () {
+	private void Update () {
         if (isState("Attack")){
             if (hand.activeSelf == false){
                 hand.SetActive(true);
             }
-        }
-        else{
+        } else {
             if (hand.activeSelf == true){
                 hand.SetActive(false);
             }
