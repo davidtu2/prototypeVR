@@ -8,11 +8,15 @@ public class Switch : MonoBehaviour {
     private bool fading;
     private float fadePerSecond = 0.5f;
     private Material material;
+    private Transform trans;
+    private Vector3 initialPos;
 
     private void Start () {
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<Switches>();
         fading = false;
         material = GetComponent<Renderer>().material;
+        trans = GetComponent<Transform>();
+        initialPos = trans.position;
     }
 
     private void Update(){
@@ -28,13 +32,13 @@ public class Switch : MonoBehaviour {
                 gameObject.SetActive(false);
             }
         }
-    }
 
-    private void OnTriggerEnter(Collider other){
-        Debug.Log(tag);
-        manager.unlock(tag);
-
-        //Start fading
-        fading = true;
+        //If the object moved due to physics forces
+        if (initialPos != trans.position){
+            manager.unlock(tag);
+            
+            //Start fading
+            fading = true;
+        }
     }
 }
