@@ -6,8 +6,8 @@ using UnityEngine;
 public class Eyes : MonoBehaviour {
     private Vector2 mouseLook; //Keeps track of the accumulated mouse movement
     private Vector2 smoothV; //Prevents "jerkiness" of the camera
-    public float sensitivity = 5F; //How much you want to move the mouse on the screen
-    public float smoothing = 2F;
+    public float sensitivity = 2F; //How much you want to move the mouse on the screen
+    public float smoothing = 1F;
     private GameObject character;
 
 	// Use this for initialization

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Controller : MonoBehaviour {
-    public float spd = 5F;
+    public float spd = 3F;
 
 	// Use this for initialization
 	private void Start () {
