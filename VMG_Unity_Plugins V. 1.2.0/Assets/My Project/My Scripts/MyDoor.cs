@@ -1,25 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; //Needed to access Text
 
 public class MyDoor : MonoBehaviour {
     private Animator animatorDoor;
     private ARMSManager manager;
-    private Canvas UI;
     public bool locked;
 
-    //Initialization
     private void Start (){
         //This gets the Transform with the specified name from the object hierarchy
         animatorDoor = transform.Find("Door_01").GetComponent<Animator>();
         //This gets the ARMSManager script
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
-
-        UI = GameObject.FindGameObjectWithTag("InteractionUI").GetComponent<Canvas>();
-        if (UI != null){
-            UI.rootCanvas.enabled = false;
-        }
 
         locked = true;
     }
@@ -27,11 +19,11 @@ public class MyDoor : MonoBehaviour {
     //This control struc be enabled if isTrigger = true
     private void OnTriggerEnter (Collider other){
         //"Empty" means that the door is idle and "0" refers to the layer in the Animator. In this case, it is the Base Layer
-        if (UI != null && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty")){
+        if (manager.getCanvas() != null && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty")){
             if (!locked){
                 if (!isBehindDoor(other.transform.position)){
-                    UI.GetComponentInChildren<Text>().text = "Punch the door to open";
-                    UI.rootCanvas.enabled = true;
+                    manager.setDoorStateText("Punch the door to open");
+                    manager.setPanel(true);
                 } else {
                     //The player is facing the back of the door and is waiting for it to re-open
                     if (other.gameObject.tag == "Body") {
@@ -39,15 +31,15 @@ public class MyDoor : MonoBehaviour {
                     }
                 }
             } else {
-                UI.GetComponentInChildren<Text>().text = "The door is locked";
-                UI.rootCanvas.enabled = true;
+                manager.setDoorStateText("The door is locked");
+                manager.setPanel(true);
             }
         }
 	}
 
 	private void OnTriggerExit (Collider other){
-        if (UI != null){
-            UI.rootCanvas.enabled = false;
+        if (manager.getCanvas() != null){
+            manager.setPanel(false);
         }
 
         if (other.gameObject.tag == "Body" && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("OpenDoor")){
