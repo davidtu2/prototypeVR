@@ -9,10 +9,9 @@ public class ARMSManager : MonoBehaviour {
     private GameObject ARMS;
     private GameObject hand;
     private Animator animatorARMS;
-
-    //private Canvas UI; //This is a canvas component. It's game object could be used instead
     private GameObject UI;
-    private GameObject panel;
+    private GameObject doorPanel;
+    private GameObject winPanel;
     private Text doorState;
     private Text punchCounter;
     public int energy;
@@ -21,10 +20,9 @@ public class ARMSManager : MonoBehaviour {
         ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
         hand = GameObject.FindGameObjectWithTag("Hand");
         animatorARMS = ARMS.GetComponent<Animator>();
-        //UI = GameObject.FindGameObjectWithTag("InteractionUI").GetComponent<Canvas>();
         UI = GameObject.FindGameObjectWithTag("InteractionUI");
-        panel = UI.transform.Find("Panel").gameObject;
-        Debug.Log(panel);
+        doorPanel = UI.transform.Find("Panel").gameObject;
+        winPanel = UI.transform.Find("WinPanel").gameObject;
 
         //Perform DFS to find each of the Text components
         foreach (Text text in UI.GetComponentsInChildren<Text>()){
@@ -43,7 +41,8 @@ public class ARMSManager : MonoBehaviour {
             }
         }
 
-        setPanel(false);
+        setPanel("Door", false);
+        setPanel("Win", false);
         energy = 20;
         setPunchCounter();
     }
@@ -88,13 +87,22 @@ public class ARMSManager : MonoBehaviour {
     }
 
     private void setPunchCounter(){
-        punchCounter.text = "Punch Left: " + energy.ToString();
+        punchCounter.text = "Punches Left: " + energy.ToString();
     }
 
-    public void setPanel(bool state){
+    public void setPanel(string panel, bool state){
         if (UI != null){
-            //UI.rootCanvas.enabled = state;
-            panel.SetActive(state);
+            switch (panel){
+                case "Door":
+                    doorPanel.SetActive(state);
+                    break;
+                case "Win":
+                    winPanel.SetActive(state);
+                    break;
+                default:
+                    Debug.Log("The panel cannot be found");
+                    break;
+            }
         }
     }
 
@@ -104,6 +112,5 @@ public class ARMSManager : MonoBehaviour {
 
     public Canvas getCanvas(){
         return UI.GetComponent<Canvas>();
-        //return UI;
     }
 }

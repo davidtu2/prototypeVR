@@ -23,7 +23,7 @@ public class MyDoor : MonoBehaviour {
             if (!locked){
                 if (!isBehindDoor(other.transform.position)){
                     manager.setDoorStateText("Punch the door to open");
-                    manager.setPanel(true);
+                    manager.setPanel("Door", true);
                 } else {
                     //The player is facing the back of the door and is waiting for it to re-open
                     if (other.gameObject.tag == "Body") {
@@ -32,14 +32,14 @@ public class MyDoor : MonoBehaviour {
                 }
             } else {
                 manager.setDoorStateText("The door is locked");
-                manager.setPanel(true);
+                manager.setPanel("Door", true);
             }
         }
 	}
 
 	private void OnTriggerExit (Collider other){
         if (manager.getCanvas() != null){
-            manager.setPanel(false);
+            manager.setPanel("Door", false);
         }
 
         if (other.gameObject.tag == "Body" && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("OpenDoor")){
