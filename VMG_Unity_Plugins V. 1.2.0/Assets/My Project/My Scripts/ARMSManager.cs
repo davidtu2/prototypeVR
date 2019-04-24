@@ -1,30 +1,45 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;//Needed to reset game
+using UnityEngine.SceneManagement; //For resetting
 using UnityEngine.UI; //Needed to access Text
 
-//This class handles all of the UI of the player as well as his state
+//This class handles all of the UI of the User as well as his state
 public class ARMSManager : MonoBehaviour {
-    private GameObject ARMS;
-    private GameObject hand;
+    //Arms
     private Animator animatorARMS;
+    private GameObject ARMS;
+    private SphereCollider hand;
+
+    //UI
     private GameObject UI;
-    private GameObject doorPanel;
-    private GameObject winPanel;
+    private Image panel;
     private Text doorState;
+    private Text winMsg;
     private Text punchCounter;
+
+    //User properties
+    private Transform player;
+    private Vector3 initPos;
     public int energy;
 
-    private void Start () {
-        ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
-        hand = GameObject.FindGameObjectWithTag("Hand");
-        animatorARMS = ARMS.GetComponent<Animator>();
-        UI = GameObject.FindGameObjectWithTag("InteractionUI");
-        doorPanel = UI.transform.Find("Panel").gameObject;
-        winPanel = UI.transform.Find("WinPanel").gameObject;
+    //For debugging. These will instantiated in the inspector instead of Start()
+    public bool debug;
+    public GameObject controller;
+    public GameObject rightARM;
+    public GameObject leftARM;
 
-        //Perform DFS to find each of the Text components
+    private void Start () {
+        //Arms
+        ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
+        hand = GameObject.FindGameObjectWithTag("Hand").GetComponent<SphereCollider>();
+        animatorARMS = ARMS.GetComponent<Animator>();
+
+        //UI
+        UI = GameObject.FindGameObjectWithTag("InteractionUI"); //Used to find Text components
+        panel = UI.transform.Find("Panel").gameObject.GetComponent<Image>();
+
+        //Find each of the Text components
         foreach (Text text in UI.GetComponentsInChildren<Text>()){
             if (text.gameObject != gameObject){
                 switch (text.gameObject.name){
@@ -33,6 +48,9 @@ public class ARMSManager : MonoBehaviour {
                         break;
                     case "PunchCounter":
                         punchCounter = text;
+                        break;
+                    case "YouWin":
+                        winMsg = text;
                         break;
                     default:
                         Debug.Log("Text couldn't be found");
@@ -43,19 +61,32 @@ public class ARMSManager : MonoBehaviour {
 
         setPanel("Door", false);
         setPanel("Win", false);
-        energy = 20;
+
+        //User properties
+        player = GameObject.FindGameObjectWithTag("Body").GetComponent<Transform>();
+        initPos = player.position;
+        energy = 5;
         setPunchCounter();
+
+        //Debugging
+        if (debug){
+            controller.GetComponent<SkinnedMeshRenderer>().enabled = true;
+            leftARM.GetComponent<MeshRenderer>().enabled = true;
+            rightARM.GetComponent<MeshRenderer>().enabled = true;
+        }
     }
 	
 	// Update is called once per frame
 	private void Update () {
+        //It is better to enable/disable components rather than enabling/disabling game objects,
+        //as it destroys game objects and will lose the reference!
         if (isState("Attack")){
-            if (hand.activeSelf == false){
-                hand.SetActive(true);
+            if (hand.enabled == false){
+                hand.enabled = true;
             }
         } else {
-            if (hand.activeSelf == true){
-                hand.SetActive(false);
+            if (hand.enabled == true){
+                hand.enabled = false;
             }
         }
     }
@@ -76,11 +107,13 @@ public class ARMSManager : MonoBehaviour {
 
                 //Everytime the user performs an action, he will use energy
                 energy -= 1;
-                setPunchCounter();
+                setPunchCounter(); //Updates display
             }
 
             //If the user runs out of energy, the game will restart
             if (energy <= 0){
+                energy = 5;
+                player.position = initPos;
                 SceneManager.LoadScene("MyLevel");
             }
         }
@@ -90,14 +123,16 @@ public class ARMSManager : MonoBehaviour {
         punchCounter.text = "Punches Left: " + energy.ToString();
     }
 
-    public void setPanel(string panel, bool state){
+    public void setPanel(string panelType, bool state){
         if (UI != null){
-            switch (panel){
-                case "Door":
-                    doorPanel.SetActive(state);
+            switch (panelType){
+                case "Door": //Build a door panel
+                    panel.enabled = state; //Enable the panel for the text
+                    doorState.enabled = state; //Text should already have the latest info
                     break;
-                case "Win":
-                    winPanel.SetActive(state);
+                case "Win": //Build a win message panel
+                    panel.enabled = state;
+                    winMsg.enabled = state;
                     break;
                 default:
                     Debug.Log("The panel cannot be found");

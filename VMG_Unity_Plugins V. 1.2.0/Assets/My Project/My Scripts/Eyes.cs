@@ -10,8 +10,8 @@ public class Eyes : MonoBehaviour {
     public float smoothing = 1F;
     private GameObject character;
 
-	// Use this for initialization
-	private void Start () {
+    // Use this for initialization
+    private void Start () {
         //Init the character as the camera's parent (the capsule)
         character = this.transform.parent.gameObject;
 	}

@@ -62,9 +62,8 @@ namespace VML{
         VMG30_Driver gloveL = new VMG30_Driver();
         VMG30_Driver gloveR = new VMG30_Driver();
 
-        // Use this for initialization
         void Start(){
-            Debug.Log("Start\n");
+            //Debug.Log("Start\n");
             Debug.Log("Initial Left Glove Comport: " + COMPORT_LeftGlove + "\n");
             Debug.Log("Initial Right Glove Comport: " + COMPORT_RightGlove + "\n");
 
@@ -73,19 +72,6 @@ namespace VML{
 
             gloveR.Init(COMPORT_RightGlove, Constants.RightHanded, Constants.PKG_QUAT_FINGER);
             gloveR.StartCommunication();
-
-            Debug.Log(spine.name);
-            Debug.Log(root.name);
-
-            Debug.Log(clavicleR.name);
-            Debug.Log(upperArmR.name);
-            Debug.Log(lowerArmR.name);
-            Debug.Log(handR.name);
-
-            Debug.Log(clavicleL.name);
-            Debug.Log(upperArmL.name);
-            Debug.Log(lowerArmL.name);
-            Debug.Log(handL.name);
         }
 
         void OnApplicationQuit(){
@@ -399,7 +385,7 @@ namespace VML{
         }
 
         private void DrawSkeletonLeft(VMGValues v){
-            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + " YAW0:" + gloveL.GetYaw0() + "\n");//roll, pitch, yaw for the wrist
+            //Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + " YAW0:" + gloveL.GetYaw0() + "\n");//roll, pitch, yaw for the wrist
 
             //TODO: draws skeletion with one index finger
             Debug.DrawRay(spine.position, new Vector3(0.1f, 0.0f, 0.0f), Color.magenta);
@@ -445,8 +431,8 @@ namespace VML{
         }
 
         private void DrawSkeletonRight(VMGValues v){
-            Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + "\n");//Roll, pitch, yaw of the wrist
-            Debug.Log("RPY_H:" + v.rollH + " " + v.pitchH + " " + v.yawH + "\n");//Roll, pitch, yaw of the hand
+            //Debug.Log("RPY_W:" + v.rollW + " " + v.pitchW + " " + v.yawW + "\n");//Roll, pitch, yaw of the wrist
+            //Debug.Log("RPY_H:" + v.rollH + " " + v.pitchH + " " + v.yawH + "\n");//Roll, pitch, yaw of the hand
             //Draws a line from start to start + dir in world coordinates
             //TODO: May need to specify length and duration
             Debug.DrawRay(spine.position, new Vector3(0.1f, 0.0f, 0.0f), Color.magenta);//x-axis
@@ -495,7 +481,7 @@ namespace VML{
             //get XRot in the lowerhand reference frame
             Vector3 XrotLowerArm = lowerArmR.InverseTransformVector(Xrot);
             float pitchHandRel = Mathf.Rad2Deg * Mathf.Atan2(XrotLowerArm[2], XrotLowerArm[0]);//atan(z, x)
-            Debug.Log("Pitch Hand Rel:" + pitchHandRel + "\n");
+            //Debug.Log("Pitch Hand Rel:" + pitchHandRel + "\n");
 
             Xrot.Normalize();
             float yawRot = 180.0f * ((float)System.Math.Atan2(Xrot[0], Xrot[2])) / 3.14159f;//atan(x, z)
@@ -525,9 +511,9 @@ namespace VML{
             Debug.DrawRay(handR.position, zaxis, Color.blue);
 
             //wrist quaternion representing wrist rotation (Can be accessed in VMGValues class)
-            Debug.Log("QUATW:" + v.q0w.ToString("F3") + " " + v.q1w.ToString("F3") + " " + v.q2w.ToString("F3") + " " + v.q3w.ToString("F3") + "\n");
+            //Debug.Log("QUATW:" + v.q0w.ToString("F3") + " " + v.q1w.ToString("F3") + " " + v.q2w.ToString("F3") + " " + v.q3w.ToString("F3") + "\n");
             //hand quaternion representing hand orientation
-            Debug.Log("QUATH:" + v.q0h.ToString("F3") + " " + v.q1h.ToString("F3") + " " + v.q2h.ToString("F3") + " " + v.q3h.ToString("F3") + "\n");
+            //Debug.Log("QUATH:" + v.q0h.ToString("F3") + " " + v.q1h.ToString("F3") + " " + v.q2h.ToString("F3") + " " + v.q3h.ToString("F3") + "\n");
         }
     }
 }
