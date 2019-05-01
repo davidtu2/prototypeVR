@@ -65,7 +65,7 @@ public class ARMSManager : MonoBehaviour {
         //User properties
         player = GameObject.FindGameObjectWithTag("Body").GetComponent<Transform>();
         initPos = player.position;
-        energy = 5;
+        energy = 20;
         setPunchCounter();
 
         //Debugging
