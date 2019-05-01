@@ -33,7 +33,7 @@ public class Eyes : MonoBehaviour {
         //Make a local rotation on the camera around it's right axis (which is it's x-axis). This makes the camera pitch
         //Using -mouseLook.y rather than a positive value gives the camera an inverted y-axis
         transform.localRotation = Quaternion.AngleAxis(-mouseLook.y, Vector3.right);
-        //Rotate around the CHARACTER's up since we want the character to move
+        //Rotate around the CHARACTER's up since we want the character to turn
         character.transform.localRotation = Quaternion.AngleAxis(mouseLook.x, character.transform.up);
     }
 }

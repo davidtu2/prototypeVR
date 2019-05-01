@@ -19,7 +19,8 @@ public class ARMSManager : MonoBehaviour {
     private Text punchCounter;
 
     //User properties
-    private Transform player;
+    //private Transform player;
+    private GameObject player;
     private Vector3 initPos;
     public int energy;
 
@@ -28,6 +29,7 @@ public class ARMSManager : MonoBehaviour {
     public GameObject controller;
     public GameObject rightARM;
     public GameObject leftARM;
+    public GameObject plane;
 
     private void Start () {
         //Arms
@@ -63,16 +65,16 @@ public class ARMSManager : MonoBehaviour {
         setPanel("Win", false);
 
         //User properties
-        player = GameObject.FindGameObjectWithTag("Body").GetComponent<Transform>();
-        initPos = player.position;
-        energy = 20;
-        setPunchCounter();
+        player = GameObject.FindGameObjectWithTag("Body");
+        initPos = player.transform.position;
+        resetGame();
 
         //Debugging
         if (debug){
-            controller.GetComponent<SkinnedMeshRenderer>().enabled = true;
-            leftARM.GetComponent<MeshRenderer>().enabled = true;
+            //controller.GetComponent<SkinnedMeshRenderer>().enabled = true;
+            //leftARM.GetComponent<MeshRenderer>().enabled = true;
             rightARM.GetComponent<MeshRenderer>().enabled = true;
+            plane.GetComponent<MeshRenderer>().enabled = true;
         }
     }
 	
@@ -112,8 +114,8 @@ public class ARMSManager : MonoBehaviour {
 
             //If the user runs out of energy, the game will restart
             if (energy <= 0){
-                energy = 5;
-                player.position = initPos;
+                resetGame();
+                player.transform.position = initPos;
                 SceneManager.LoadScene("MyLevel");
             }
         }
@@ -147,5 +149,10 @@ public class ARMSManager : MonoBehaviour {
 
     public Canvas getCanvas(){
         return UI.GetComponent<Canvas>();
+    }
+
+    private void resetGame(){
+        energy = 20;
+        setPunchCounter();
     }
 }
