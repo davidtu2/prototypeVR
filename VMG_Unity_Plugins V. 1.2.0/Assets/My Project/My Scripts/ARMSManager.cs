@@ -6,6 +6,11 @@ using UnityEngine.UI; //Needed to access Text
 
 //This class handles all of the UI of the User as well as his state
 public class ARMSManager : MonoBehaviour {
+    private GameObject player;
+    private Vector3 initPos;
+    private Eyes cam;
+    public int energy;
+
     //Arms
     private Animator animatorARMS;
     private GameObject ARMS;
@@ -18,12 +23,6 @@ public class ARMSManager : MonoBehaviour {
     private Text winMsg;
     private Text punchCounter;
 
-    //User properties
-    //private Transform player;
-    private GameObject player;
-    private Vector3 initPos;
-    public int energy;
-
     //For debugging. These will instantiated in the inspector instead of Start()
     public bool debug;
     public GameObject controller;
@@ -32,10 +31,14 @@ public class ARMSManager : MonoBehaviour {
     public GameObject plane;
 
     private void Start () {
+        player = GameObject.FindGameObjectWithTag("Body");
+        initPos = player.transform.position;
+        cam = player.GetComponentInChildren<Eyes>();
+
         //Arms
         ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
-        hand = GameObject.FindGameObjectWithTag("Hand").GetComponent<SphereCollider>();
         animatorARMS = ARMS.GetComponent<Animator>();
+        hand = GameObject.FindGameObjectWithTag("Hand").GetComponent<SphereCollider>();
 
         //UI
         UI = GameObject.FindGameObjectWithTag("InteractionUI"); //Used to find Text components
@@ -64,9 +67,6 @@ public class ARMSManager : MonoBehaviour {
         setPanel("Door", false);
         setPanel("Win", false);
 
-        //User properties
-        player = GameObject.FindGameObjectWithTag("Body");
-        initPos = player.transform.position;
         resetGame();
 
         //Debugging
@@ -115,7 +115,6 @@ public class ARMSManager : MonoBehaviour {
             //If the user runs out of energy, the game will restart
             if (energy <= 0){
                 resetGame();
-                player.transform.position = initPos;
                 SceneManager.LoadScene("MyLevel");
             }
         }
@@ -152,6 +151,8 @@ public class ARMSManager : MonoBehaviour {
     }
 
     private void resetGame(){
+        player.transform.position = initPos;
+        cam.resetCamera();
         energy = 20;
         setPunchCounter();
     }
