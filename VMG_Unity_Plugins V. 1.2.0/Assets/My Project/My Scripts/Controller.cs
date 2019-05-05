@@ -21,7 +21,7 @@ public class Controller : MonoBehaviour {
         //Turns off the cursor so you can't see it on the screen. Will also lock it so it will stay inside the game window
         Cursor.lockState = CursorLockMode.Locked;
 
-        manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
+        manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
     }
 	
 	// Update is called once per frame

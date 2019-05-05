@@ -42,7 +42,7 @@ public class Switches : MonoBehaviour {
         switch5.SetActive(false);
         switch6.SetActive(false);
 
-        manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
+        manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
     }
 
     public void unlock(string switchName){

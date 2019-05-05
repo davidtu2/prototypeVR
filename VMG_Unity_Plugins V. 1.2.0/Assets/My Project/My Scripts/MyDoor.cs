@@ -11,7 +11,7 @@ public class MyDoor : MonoBehaviour {
         //This gets the Transform with the specified name from the object hierarchy
         animatorDoor = transform.Find("Door_01").GetComponent<Animator>();
         //This gets the ARMSManager script
-        manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
+        manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
 
         locked = true;
     }
