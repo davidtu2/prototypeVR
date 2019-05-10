@@ -58,10 +58,12 @@ public class Switches : MonoBehaviour {
                 break;
             case "Switch3":
                 door3.unlock();
+                door2.lockDoor();
                 switch4.SetActive(true);
                 break;
             case "Switch4":
                 door4.unlock();
+                door2.unlock();
                 switch5.SetActive(true);
                 break;
             case "Switch5":
@@ -75,7 +77,7 @@ public class Switches : MonoBehaviour {
                 manager.setPanel("Win", true); //Then exit the game...
                 break;
             default:
-                Debug.Log(switchName + "isn't associated with a door");
+                Debug.Log(switchName + " isn't associated with a door");
                 break;
         }
     }

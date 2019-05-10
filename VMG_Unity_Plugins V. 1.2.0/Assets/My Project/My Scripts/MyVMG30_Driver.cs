@@ -4,68 +4,15 @@ using System.IO.Ports;
 using System.Threading;
 using UnityEngine;
 
-public class VMGValues{
-    //hand quaternion representing hand orientation
-    public float q0h;
-    public float q1h;
-    public float q2h;
-    public float q3h;
+//My own version of the VMG30 Driver
+public class MyVMG30_Driver: MonoBehaviour {//Added MonoBehaviour to be able to attach this script into the inspector
+    public bool connected;//Added
 
-    //wrist quaternion representing wrist rotation
-    public float q0w;
-    public float q1w;
-    public float q2w;
-    public float q3w;
-
-    //hand orientation
-    public float rollH;
-    public float pitchH;
-    public float yawH;
-
-    //wrist orientation
-    public float rollW;
-    public float pitchW;
-    public float yawW;
-
-    public int [] SensorValues = new int[Constants.NumSensors];//all values from dataglove sensors
-
-    public int timestamp;//values representing package generation tick in ms
-
-    public void ResetValues(){
-        //reset all sensor values
-        q0h = 0.0f;
-        q1h = 0.0f;
-        q2h = 0.0f;
-        q3h = 0.0f;
-
-        q0w = 0.0f;
-        q1w = 0.0f;
-        q2w = 0.0f;
-        q3w = 0.0f;
-
-        rollH = 0.0f;
-        pitchH = 0.0f;
-        yawH = 0.0f;
-
-        rollW = 0.0f;
-        pitchW = 0.0f;
-        yawW = 0.0f;
-
-        int i = 0;
-        for (i = 0; i < Constants.NumSensors; i++){
-            SensorValues[i] = 0;
-        }
-
-        timestamp = 0;
-    }
-}
-
-public class VMG30_Driver {
-    private int ComPort = 1;//comport used for dataglove communication (default)
+    private int ComPort;
     private int GloveType = Constants.RightHanded;//Right or Left Handed
     private int GloveStreamMode = Constants.PKG_QUAT_FINGER;//streaming package mode
 
-    public VMGValues sensorValues = new VMGValues();
+    public MyVMGValues sensorValues = new MyVMGValues();
 
     private bool _newPackageAvailable;
 
@@ -88,6 +35,7 @@ public class VMG30_Driver {
     pars stream streaming type*/
     public void Init(int comport, int type, int stream){
         Debug.Log(ComPort + " will change to: " + comport + "\n");//ADDED
+        connected = false;
 
         ComPort = comport;
         GloveType = type;
@@ -101,10 +49,10 @@ public class VMG30_Driver {
     //Start dataglove communication
     public void StartCommunication(){
         //open comport
-        
+
         //start stream reading thread
         ComThreadRunning = true;
-        comThread = new Thread(GloveCommunication) {
+        comThread = new Thread(GloveCommunication){
             Name = "GloveCommunication"
         };
 
@@ -139,8 +87,8 @@ public class VMG30_Driver {
         return retval;
     }
 
-    public VMGValues GetPackage(){
-        VMGValues ret;
+    public MyVMGValues GetPackage(){
+        MyVMGValues ret;
 
         lock (_lock){
             ret = sensorValues;
@@ -150,7 +98,7 @@ public class VMG30_Driver {
     }
 
     public void SetIMUFilter(int value){
-        //Nothing???
+
     }
 
     private void GloveCommunication(){
@@ -159,32 +107,29 @@ public class VMG30_Driver {
         byte[] RecvBuffer = new byte[1024];
         int NumBytesRecv = 0;
         int NumPkgRecv = 0;
-
-        //Is initialized later...
-        SerialPort vmgcom;// = new SerialPort("COM2", 230400);
-
+        SerialPort vmgcom;
+        string str;
         bool vmgcomOk = false;
 
-        string str;
         str = "COM" + ComPort;
-        Debug.Log("Opening " + str); //Debug.Log("Open " + str + "\n");
-
+        Debug.Log("Opening " + str);
         vmgcom = new SerialPort(str, 230400);
         vmgcom.Open();
 
         if (vmgcom.IsOpen){
-            Debug.Log("Serial port correctly opened\n");
+            Debug.Log("Serial port correctly opened to the glove");
             vmgcomOk = true;
-        }else{
-            Debug.Log("Serial port error\n");
+            connected = true;
+        } else {
+            Debug.Log("Serial port error");
             vmgcomOk = false;
         }
 
-        //if comport opened succesfully then send start streaming command
+        //if the comport opened succesfully then tell the gloves to start streaming to it
         if (vmgcomOk){
             vmgcom.ReadTimeout = 1;
-            
-            //send start streaming
+
+            //send the "start streaming" command
             SendBuffer[0] = (byte)'$';
             SendBuffer[1] = (byte)0x0a;
             SendBuffer[2] = (byte)0x03;
@@ -194,13 +139,13 @@ public class VMG30_Driver {
             vmgcom.Write(SendBuffer, 0, 6);
         }
 
-        Debug.Log("Thread Started\n");
+        Debug.Log("Thread Started");
 
         while (ComThreadRunning){
-            Debug.Log("Read Bytes\n");
+            Debug.Log("Read Bytes");
 
-            try {
-                //read bytes from the dataglove stream
+            //read bytes from the dataglove stream
+            try{
                 int bytesRead = vmgcom.Read(RecvBuffer, NumBytesRecv, 20);
                 if (bytesRead > 0){
                     NumBytesRecv += bytesRead;
@@ -214,7 +159,7 @@ public class VMG30_Driver {
                             if ((RecvBuffer[i] == '$') && (RecvBuffer[i + 1] == 0x0a)) HeaderFound = true;
                             else i++;
                         }
-                        
+
                         //if header found then parse package
                         if (HeaderFound){
                             //i == pos header
@@ -320,16 +265,16 @@ public class VMG30_Driver {
                                             q22H = q2hsum / numval;
                                             q33H = q3hsum / numval;
                                         }
- 
+
                                         //compute hand roll pitch and yaw
                                         float rollH = -Mathf.Rad2Deg * Mathf.Atan2(2.0f * (q00H * q11H + q22H * q33H), 1.0f - 2.0f * (q11H * q11H + q22H * q22H));
-                                        float pitchH = -Mathf.Rad2Deg*Mathf.Asin(2.0f * (q00H * q22H - q33H * q11H));
-                                        float yawH = Mathf.Rad2Deg*Mathf.Atan2(2.0f * (q00H * q33H + q11H * q22H), 1.0f - 2.0f * (q22H * q22H + q33H * q33H));
+                                        float pitchH = -Mathf.Rad2Deg * Mathf.Asin(2.0f * (q00H * q22H - q33H * q11H));
+                                        float yawH = Mathf.Rad2Deg * Mathf.Atan2(2.0f * (q00H * q33H + q11H * q22H), 1.0f - 2.0f * (q22H * q22H + q33H * q33H));
 
                                         //compute wrist roll pitch and yaw
-                                        float rollW = -Mathf.Rad2Deg*Mathf.Atan2(2.0f * (q00W * q11W + q22W * q33W), 1.0f - 2.0f * (q11W * q11W + q22W * q22W));
-                                        float pitchW = -Mathf.Rad2Deg*Mathf.Asin(2.0f * (q00W * q22W - q33W * q11W));
-                                        float yawW = Mathf.Rad2Deg*Mathf.Atan2(2.0f * (q00W * q33W + q11W * q22W), 1.0f - 2.0f * (q22W * q22W + q33W * q33W));
+                                        float rollW = -Mathf.Rad2Deg * Mathf.Atan2(2.0f * (q00W * q11W + q22W * q33W), 1.0f - 2.0f * (q11W * q11W + q22W * q22W));
+                                        float pitchW = -Mathf.Rad2Deg * Mathf.Asin(2.0f * (q00W * q22W - q33W * q11W));
+                                        float yawW = Mathf.Rad2Deg * Mathf.Atan2(2.0f * (q00W * q33W + q11W * q22W), 1.0f - 2.0f * (q22W * q22W + q33W * q33W));
 
                                         //bound on yaw (drift problem)
                                         if (yawW >= 180.0f) yawW = -360.0f + yawW;
@@ -345,7 +290,7 @@ public class VMG30_Driver {
                                         }
 
                                         //update sensor values (protected)
-                                        lock(_lock){
+                                        lock (_lock){
                                             sensorValues.timestamp = timestamp;
 
                                             sensorValues.pitchH = pitchH;
@@ -389,13 +334,13 @@ public class VMG30_Driver {
 
                                 NumBytesRecv = bytesrem;
                             }
-                        }else{
+                        } else {
                             Debug.Log("Header not found\n");
                             NumBytesRecv = 0;
                         }
                     }
                 }
-            }catch{
+            } catch {
                 //serial port generates an exeption, do nothing
                 Debug.Log("Unable to read bytes from the dataglove stream");
             }
@@ -404,7 +349,7 @@ public class VMG30_Driver {
         //thread completed, send cend streaming and close the port
         if (vmgcomOk){
             vmgcom.ReadTimeout = 1;
-            
+
             //send start streaming
             SendBuffer[0] = (byte)'$';
             SendBuffer[1] = (byte)0x0a;

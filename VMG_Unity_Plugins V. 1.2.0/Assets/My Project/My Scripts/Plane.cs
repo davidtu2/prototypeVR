@@ -7,7 +7,7 @@ public class Plane : MonoBehaviour {
 
     //Initialization
     private void Start () {
-        manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<ARMSManager>();
+        manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
     }
 
     private void OnTriggerEnter(Collider other){
