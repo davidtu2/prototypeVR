@@ -29,6 +29,17 @@ public class MyVMG30_Driver: MonoBehaviour {//Added MonoBehaviour to be able to 
     List<Quaternion> lQuatW = new List<Quaternion>();
     List<Quaternion> lQuatH = new List<Quaternion>();
 
+    //Added to persistently keep track of the connected bool
+    private void Awake(){
+        GameObject[] objs = GameObject.FindGameObjectsWithTag("Body");
+
+        if (objs.Length > 1){
+            Destroy(this.gameObject);
+        }
+
+        DontDestroyOnLoad(this.gameObject);
+    }
+
     /*driver initialization 
     pars comport dataglove communication port
     pars type dataglove type (RightHanded or LeftHanded)
