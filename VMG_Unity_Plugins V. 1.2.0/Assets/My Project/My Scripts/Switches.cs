@@ -18,7 +18,7 @@ public class Switches : MonoBehaviour {
     private GameObject switch5;
     private GameObject switch6;
 
-    private ARMSManager manager;
+    private UI UI;
 
     private void Start () {
         door1 = GameObject.FindGameObjectWithTag("Door1").GetComponent<MyDoor>();
@@ -42,7 +42,8 @@ public class Switches : MonoBehaviour {
         switch5.SetActive(false);
         switch6.SetActive(false);
 
-        manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
+        //manager = GameObject.FindGameObjectWithTag("Status").GetComponent<ARMSManager>();
+        UI = GameObject.FindGameObjectWithTag("InteractionUI").GetComponent<UI>();
     }
 
     public void unlock(string switchName){
@@ -74,7 +75,7 @@ public class Switches : MonoBehaviour {
                 door6.unlock();
                 break;
             case "RoomSwitch":
-                manager.setPanel("Win", true); //Then exit the game...
+                UI.setPanel("Win", true); //Then exit the game...
                 break;
             default:
                 Debug.Log(switchName + " isn't associated with a door");

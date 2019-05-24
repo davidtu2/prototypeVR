@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement; //For resetting
-using UnityEngine.UI; //Needed to access Text
 
 //This class handles all of the UI of the User as well as his state
 public class ARMSManager : MonoBehaviour {
@@ -10,18 +9,10 @@ public class ARMSManager : MonoBehaviour {
     private Vector3 initPos;
     private Eyes cam;
     public int energy;
-
-    //Arms
     private Animator animatorARMS;
     private GameObject ARMS;
     private SphereCollider hand;
-
-    //UI
-    private GameObject UI;
-    private Image panel;
-    private Text doorState;
-    private Text winMsg;
-    private Text punchCounter;
+    private UI UI;
 
     //For debugging. These will instantiated in the inspector instead of Start()
     public bool debug;
@@ -34,38 +25,10 @@ public class ARMSManager : MonoBehaviour {
         player = GameObject.FindGameObjectWithTag("Body");
         initPos = player.transform.position;
         cam = player.GetComponentInChildren<Eyes>();
-
-        //Arms
         ARMS = GameObject.FindGameObjectWithTag("ArmsObject1");
         animatorARMS = ARMS.GetComponent<Animator>();
         hand = GameObject.FindGameObjectWithTag("Hand").GetComponent<SphereCollider>();
-
-        //UI
-        UI = GameObject.FindGameObjectWithTag("InteractionUI"); //Used to find Text components
-        panel = UI.transform.Find("Panel").gameObject.GetComponent<Image>();
-
-        //Find each of the Text components
-        foreach (Text text in UI.GetComponentsInChildren<Text>()){
-            if (text.gameObject != gameObject){
-                switch (text.gameObject.name){
-                    case "DoorState":
-                        doorState = text;
-                        break;
-                    case "PunchCounter":
-                        punchCounter = text;
-                        break;
-                    case "YouWin":
-                        winMsg = text;
-                        break;
-                    default:
-                        Debug.Log("Text couldn't be found");
-                        break;
-                }
-            }
-        }
-
-        setPanel("Door", false);
-        setPanel("Win", false);
+        UI = GameObject.FindGameObjectWithTag("InteractionUI").GetComponent<UI>();
 
         resetGame();
 
@@ -109,7 +72,7 @@ public class ARMSManager : MonoBehaviour {
 
                 //Everytime the user performs an action, he will use energy
                 energy -= 1;
-                setPunchCounter(); //Updates display
+                UI.setPunchCounter(energy); //Updates display
             }
 
             //If the user runs out of energy, the game will restart
@@ -120,40 +83,12 @@ public class ARMSManager : MonoBehaviour {
         }
     }
 
-    private void setPunchCounter(){
-        punchCounter.text = "Punches Left: " + energy.ToString();
-    }
-
-    public void setPanel(string panelType, bool state){
-        if (UI != null){
-            switch (panelType){
-                case "Door": //Build a door panel
-                    panel.enabled = state; //Enable the panel for the text
-                    doorState.enabled = state; //Text should already have the latest info
-                    break;
-                case "Win": //Build a win message panel
-                    panel.enabled = state;
-                    winMsg.enabled = state;
-                    break;
-                default:
-                    Debug.Log("The panel cannot be found");
-                    break;
-            }
-        }
-    }
-
-    public void setDoorStateText(string state){
-        doorState.text = state;
-    }
-
-    public Canvas getCanvas(){
-        return UI.GetComponent<Canvas>();
-    }
-
     private void resetGame(){
         player.transform.position = initPos;
         cam.resetCamera();
         energy = 20;
-        setPunchCounter();
+        UI.setPunchCounter(energy);
+        UI.setPanel("Door", false);
+        UI.setPanel("Win", false);
     }
 }
