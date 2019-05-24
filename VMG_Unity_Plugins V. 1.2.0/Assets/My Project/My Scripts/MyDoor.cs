@@ -1,5 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿//using System.Collections;
+//using System.Collections.Generic;
 using UnityEngine;
 
 public class MyDoor : MonoBehaviour {
@@ -14,36 +14,31 @@ public class MyDoor : MonoBehaviour {
         locked = true;
     }
 
-    /*private void Update(){
-        if (UI.getCanvas() != null && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("OpenDoor")){
-            UI.setPanel("Door", false);
-        }
-    }*/
-
     //This control struc be enabled if isTrigger = true
     private void OnTriggerEnter (Collider other){
         //"Empty" means that the door is idle and "0" refers to the layer in the Animator. In this case, it is the Base Layer
-        if (UI.getCanvas() != null && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty")){
-            if (!locked){
-                if (!isBehindDoor(other.transform.position)){
-                    UI.setDoorStateText("Punch the door to open");
-                    UI.setPanel("Door", true);
-
+        if (other.gameObject.tag == "Body" && animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty")) {
+            if (!locked) {
+                if (!isBehindDoor(other.transform.position)) {
+                    if (UI.getCanvas() != null){
+                        UI.setDoorStateText("Punch the door to open");
+                        UI.setPanel("Door", true);
+                    }
                 } else {
                     //The player is facing the back of the door and is waiting for it to re-open
-                    if (other.gameObject.tag == "Body") {
-                        toggleDoorState();
-                    }
+                    toggleDoorState();
                 }
             } else {
-                UI.setDoorStateText("The door is locked");
-                UI.setPanel("Door", true);
+                if (UI.getCanvas() != null){
+                    UI.setDoorStateText("The door is locked");
+                    UI.setPanel("Door", true);
+                }
             }
         }
 	}
 
 	private void OnTriggerExit (Collider other){
-        if (UI.getCanvas() != null){
+        if (UI.getCanvas() != null && other.gameObject.tag == "Body"){
             UI.setPanel("Door", false);
         }
 
@@ -54,7 +49,7 @@ public class MyDoor : MonoBehaviour {
 
     //Used to check if an object is already inside the trigger zone
     private void OnTriggerStay(Collider other){
-        if (other.gameObject.tag == "Hand"){
+        if (other.gameObject.tag == "Hand"){ //Hand will generate upon punching
             if (animatorDoor.GetCurrentAnimatorStateInfo(0).IsName("Empty") && !locked && !isBehindDoor(other.transform.position) && animatorDoor.GetBool("IsOpen") == false){
                 toggleDoorState();
             }
@@ -65,6 +60,11 @@ public class MyDoor : MonoBehaviour {
         if (animatorDoor != null){
             //Switches between true and false
             animatorDoor.SetBool("IsOpen", !animatorDoor.GetBool("IsOpen"));
+        }
+
+        if (UI.getCanvas() != null && animatorDoor.GetBool("IsOpen")){
+            //Turn off the message if the door is open
+            UI.setPanel("Door", false);
         }
     }
 
