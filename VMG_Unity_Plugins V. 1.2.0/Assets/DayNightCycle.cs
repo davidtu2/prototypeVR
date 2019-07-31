@@ -6,7 +6,7 @@ public class DayNightCycle : MonoBehaviour {
     public float speed;
 
     void Start(){
-        speed = 20f; // Controls the speed of the sun and moon
+        speed = 5f; // Controls the speed of the sun and moon
     }
 
     void Update () {
